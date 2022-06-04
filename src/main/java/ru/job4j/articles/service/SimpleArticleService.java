@@ -16,8 +16,8 @@ public class SimpleArticleService implements ArticleService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleArticleService.class.getSimpleName());
     private final ArticleGenerator articleGenerator;
-    private static final Runtime runtime = Runtime.getRuntime();
-    private static final long minMemory = runtime.totalMemory() / 10;
+    private static final Runtime RUNTIME = Runtime.getRuntime();
+    private static final long MIN_MEMORY = RUNTIME.totalMemory() / 10;
     private static final long MB = 1024 * 1024;
 
     public SimpleArticleService(ArticleGenerator articleGenerator) {
@@ -27,12 +27,12 @@ public class SimpleArticleService implements ArticleService {
     @Override
     public void generate(Store<Word> wordStore, int count, Store<Article> articleStore) {
         LOGGER.info("Генерация статей в количестве {}", count);
-        LOGGER.info("Минимальный порог свободной памяти {}", minMemory / MB);
+        LOGGER.info("Минимальный порог свободной памяти {}", MIN_MEMORY / MB);
         var words = wordStore.findAll();
         List<Article> articles = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            if (runtime.freeMemory() <= minMemory) {
-                LOGGER.info("Памяти осталось менее 10% - {} Мб", runtime.freeMemory() / MB);
+            if (RUNTIME.freeMemory() <= MIN_MEMORY) {
+                LOGGER.info("Памяти осталось менее 10% - {} Мб", RUNTIME.freeMemory() / MB);
                 LOGGER.info("Выгружаю данные в БД");
                 articles.forEach(articleStore::save);
                 articles = new ArrayList<>();
